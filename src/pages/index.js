@@ -1,11 +1,26 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from '@/styles/Home.module.css'
+import Head from "next/head"
+import Image from "next/image"
+import Link from "next/link"
+import axios from "axios"
+import { Inter } from "@next/font/google"
+import styles from "@/styles/Home.module.css"
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] })
 
-export default function Home() {
+export const getStaticProps = async () => {
+  const res = await axios({
+    method: "GET",
+    url: `https://bwqhuq2dlg.execute-api.eu-west-3.amazonaws.com/dev/cats`,
+  })
+  return {
+    props: {
+      cats: res.data,
+    },
+  }
+}
+
+export default function Home({ cats }) {
+  console.log(cats)
   return (
     <>
       <Head>
@@ -15,6 +30,12 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
+        {cats &&
+          cats.map((cat) => (
+            <li key={cat.id}>
+              `${cat.name} ${cat.age}`
+            </li>
+          ))}
         <div className={styles.description}>
           <p>
             Get started by editing&nbsp;
@@ -26,7 +47,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              By{' '}
+              By{" "}
               <Image
                 src="/vercel.svg"
                 alt="Vercel Logo"
